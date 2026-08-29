@@ -146,3 +146,4 @@ Every enabled skill serves a strict purpose: engineering rigor, architectural go
    - Maintain strict Git/GitHub CLI account and branch discipline.
 6. **`ui-ux-pro-max` & `awesome-design-md`**: For all UI/frontend tasks, enforce semantic design tokens, WCAG AA contrast compliance, complete component interaction states (hover, focus, disabled, loading, active), and standardized `DESIGN.md` documentation.
 7. **`openspec-*`**: Follow the formal feature change lifecycle (`propose`, `explore`, `apply`, `update`, `sync`, `archive`) for end-to-end architectural governance.
+8. **`configure-dsh-plugins`**: INSTALL/REPAIR the DSH profile's third-party plugins from the user's forks/corrections (`dsh-vsceditor` i18n branch, `dsh-llm-failover` keyed-slot fix) until upstream adopts the user's issues; refresh a stale `pnpm-lock.yaml`; wire `~/.claude/skills` into DSH via `customSkillDirs`/`~/.agents/skills` mirror.

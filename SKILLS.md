@@ -41,3 +41,8 @@ Active skills available in the environment for proactive execution:
 - **Description:** OpenSpec suite for structured software change governance (`openspec-propose`, `openspec-explore`, `openspec-apply-change`, `openspec-update-change`, `openspec-sync-specs`, `openspec-archive-change`).
 - **Location:** `~/.claude/skills/openspec-*/` or `~/.config/opencode/skills/openspec-*/`
 - **Trigger:** Formal specification-driven development and architecture change lifecycles.
+
+## 9. `configure-dsh-plugins`
+- **Description:** Configura o DeepSeek Harness (DSH) com os plugins/forks do usuário (`dsh-vsceditor` i18n, `dsh-llm-failover` fix, `dsh-tier-router`/tier-preset-discovery, `dsh-vscode-theme`) até a adoção oficial das issues; integra as skills de `~/.claude/skills` ao DSH (`customSkillDirs`/`~/.agents/skills`).
+- **Location:** `~/.claude/skills/configure-dsh-plugins/` (espelhado em `~/.agents/skills/` e `./skills/` no workspace)
+- **Trigger:** Instalar/corrigir plugins do DSH no perfil `$DSH_HOME/profiles/web`, sincronizar lockfile stale, ou conectar skills `.claude` ao DSH.
