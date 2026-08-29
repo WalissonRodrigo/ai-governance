@@ -1,0 +1,15 @@
+# Ensure shell scripts always use LF line endings
+*.sh           text eol=lf
+*.py           text eol=lf
+
+# Markdown and JSON use LF too (prevents CRLF from Windows/OneDrive)
+*.md           text eol=lf
+*.json         text eol=lf
+*.yaml         text eol=lf
+*.yml          text eol=lf
+
+# Binary files
+*.pdf          binary
+*.docx         binary
+*.xlsx         binary
+*.pptx         binary

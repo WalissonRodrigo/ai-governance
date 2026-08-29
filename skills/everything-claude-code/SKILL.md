@@ -15,11 +15,15 @@ Operate as a lead controller enforcing tool safety, context preservation, and de
 | Intent | Primary Tool | Fallback / Alternative | Anti-Pattern | Rationale |
 |---|---|---|---|---|
 | Find files by pattern | `glob` | `bash (find)` | Recursive `read` | Instant native AST index; zero shell subshell cost |
-| Search code/symbols | `grep` / `rg` | `ast-grep` | Unfiltered file dumps | Keeps context window free of unrelated symbols |
+| Search code/symbols | `rg` (ripgrep) | `grep` / `ast-grep` | Unfiltered file dumps | Keeps context window free of unrelated symbols; use `rg -n` for line numbers and `rg -t` for type filtering |
 | Read source file | `read` (with offset/limit) | `read` (full) | Full read on >200 lines | Up to 90% token reduction per file inspection |
 | Edit existing code | `edit` | Patch script | Full-file `write` | Produces clean, atomic unified diffs |
 | CLI / Tests / Builds | `bash` + `rtk` | `bash` + stream pipe | Raw noisy shell exec | Truncates build spam and noisy logs by 80%+ |
 | Open-ended research | `task` (sub-agent) | Manual sequential read | Context-polluting loops | Sub-agent context is isolated and purged post-run |
+
+> **Search Tooling (`rg` over `grep`)**: ALWAYS prefer `ripgrep` (`rg`) for codebase searches. Use flags like `rg -n "pattern"` to capture line numbers for surgical edits, and `rg -t ts "pattern"` to restrict searches to specific file types. Never use generic `grep` unless `rg` is unavailable in the environment.
+>
+> **Installer-Assisted Tooling**: The bundle's `install.sh` installs and/or verifies `ripgrep`, `ast-grep`, `tsc` (TypeScript), `mypy`, and `pytest` when available. Prefer these tools in their domains (`ast-grep` for semantic search, `tsc`/`mypy` for type auditing, `pytest` for test validation).
 
 ---
 

@@ -82,7 +82,8 @@ Customize the following template variables to match your environment:
 ## 4. Token Economy & High-Scale Audit Strategies
 
 - **Static Analysis First**: NEVER dump whole codebase files into the context window when auditing, mapping, or understanding system structures. ALWAYS generate or inspect structural outlines first (AST, export signatures, package manifests).
-- **Targeted Grep/Search**: Before asking the model to read a file, use precise search filters (`rtk grep`, `rtk find`, `ripgrep`) to isolate relevant modules (e.g., Auth, Identity, Tokens, Handlers).
+- **Search Tooling (`rg` over `grep`)**: ALWAYS prefer `ripgrep` (`rg`) for codebase searches. Use flags like `rg -n "pattern"` to capture line numbers for surgical edits, and `rg -t ts "pattern"` to restrict searches to specific file types. Never use generic `grep` unless `rg` is unavailable in the environment.
+- **Targeted Grep/Search**: Before asking the model to read a file, use precise search filters (`rg`, `rtk find`, `ripgrep`) to isolate relevant modules (e.g., Auth, Identity, Tokens, Handlers).
 - **Incremental Caching**: When conducting multi-repo or large-scale technical analysis (e.g., IAM architectures), store intermediate findings in a local `.ai-cache/` directory. Refer to cached `.md` summaries instead of re-reading raw repositories.
 - **Pre-Filtering Scripting**: Favor lightweight local WSL shell scripts (`find`, `awk`, `jq`, `ast-grep`) to compile data/JSON reports before consuming context window tokens.
 - **Compact Output Constraints**: Always format findings in high-density, concise Markdown tables or condensed YAML — avoid conversational fluff, self-reflections, and redundant boilerplate.
@@ -94,7 +95,7 @@ Customize the following template variables to match your environment:
 - **Read-Only Mode**: During technical analysis, mapping, or reverse engineering, DO NOT edit code, run mutating commands, or commit changes without explicit instruction.
 - **Source of Truth**: Reverse-engineer actual source code as the primary truth for logic. Use local `.md` files as the single source of truth for external docs/publications.
 - **Proposal Validation**: Before modifying original documentation or core architecture, propose changes in a `.proposta-revisada.md` file first.
-- **Environment Bootstrapping**: Always maintain `setup.sh` and `WORKSPACE-README.md` to ensure identical local workspace replication.
+- **Environment Bootstrapping**: Always maintain `install.sh` and `README.md` to ensure identical local workspace replication.
 - **Workspace Cleanup**: Redundant, temporary, or orphan files may be cleaned up proactively to keep workspaces lightweight. If you need create files to execute some action, prefer use a `.ai-cache` folder to mantain cleaned structure files and folder at project/context.
 - **Documentation Structure**: Separate factual code analysis from strategic governance using numbered directories (e.g., `01-analysis/`, `02-architecture/`).
 
