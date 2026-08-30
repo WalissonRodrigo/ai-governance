@@ -1,0 +1,21 @@
+# Tasks
+- [x] Atualizar **graphify** SKILL.md:
+  - Documentar o schema JSON de saída.
+  - Implementar cache incremental em `.ai-cache/`.
+  - Adicionar exemplos de exportação `mermaid` e `json`.
+- [x] Atualizar **awesome-design-md** SKILL.md:
+  - Inserir exemplos reais de DESIGN.md (Revolut, Stripe, Airbnb).
+  - Estruturar tokens em três camadas (primitive → semantic → component).
+  - Criar `preview.html` para visualização rápida.
+- [x] Atualizar **get-shit-done** SKILL.md:
+  - Criar artefatos `ROADMAP.md` e `STATE.md` persistentes.
+  - Separar fase de discussão antes do blueprint.
+  - Definir formato de plano estruturado (XML/YAML).
+- [x] Atualizar **everything-claude-code** SKILL.md:
+  - Especificar hooks `PreToolUse` (bloqueio, alerta, autocorreção).
+  - Declarar agentes como personas YAML com contrato de saída.
+  - Documentar memória persistente e políticas de segurança.
+- [x] Atualizar **ui-ux-pro-max** SKILL.md:
+  - Introduzir arquitetura de tokens (primitive/semantic/component).
+  - Listar anti‑patterns de "AI‑slop".
+  - Incluir checklist QA em 5 dimensões (visual, interação, claro/escuro, consistência, acessibilidade).

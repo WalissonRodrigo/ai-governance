@@ -42,6 +42,22 @@ When delegating via `task`, enforce specialized roles to keep sub-agents bounded
   * **Scope**: Linting, type-checking (`tsc`, `mypy`), and test suite validation.
   * **Constraint**: Only returns error traces or a green confirmation badge.
 
+When the orchestrator needs reusable, stable roles, declare them as YAML personas instead of ad-hoc instructions. Each persona carries its scope, constraints, and output contract so delegation stays deterministic:
+
+```yaml
+explorer:
+  scope: codebase-mapping | dependency-tracing | reference-finding
+  read_only: true
+  output_contract: markdown-table of files + line numbers + signatures
+executor:
+  scope: surgical-edits within one bounded module
+  constraints: [verify-syntax, run-localized-tests]
+  output_contract: edit summary + verification result
+auditor:
+  scope: lint | type-check | test-suite
+  output_contract: error traces OR green confirmation badge
+```
+
 ---
 
 ## 3. Sub-Agent Handoff & Synthesis Protocol
@@ -65,6 +81,24 @@ When delegating via `task`, enforce specialized roles to keep sub-agents bounded
   * Normalize paths relative to the active project root (`./src/...`).
   * For host/virtualized boundaries: map `C:\...` to `/mnt/c/...` transparently without breaking relative tool lookups.
 * **Secret Zero-Tolerance**: Never print, pass as arguments, or commit API keys, auth tokens, `.env` values, or private certificates.
+* **Runtime Guardrails (Hooks)**: Register `PreToolUse` hooks in `settings.json` to gate sensitive tool calls before they execute:
+  * **Block** (exit 2): refuse a call that would leak a secret or mutate an unintended target.
+  * **Alert** (exit 1): surface a warning and proceed after review.
+  * **Auto-correct**: rewrite the input (e.g., strip a credential pattern) and continue.
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Write|Edit",
+        "hooks": [{"type": "command", "command": "rtk hook claude secret-guard"}]
+      }
+    ]
+  }
+}
+```
+  * Register the hook once via `rtk`; never copy a hook definition into a destination where `rtk` is not installed.
 
 ---
 
@@ -72,3 +106,5 @@ When delegating via `task`, enforce specialized roles to keep sub-agents bounded
 
 * **Intermediate Artifacts**: Heavy AST graphs, raw JSON payloads, and CLI output captures must live in `.ai-cache/`.
 * **State Synchronization**: Maintain real-time task status using `todowrite` to retain execution checkpoints without conversational overhead.
+* **Persistent Memory**: Store reusable findings, decisions, and environment notes in `.ai-cache/` (or the workspace memory dir) so later sessions resume from recorded state instead of re-discovering it. Keep secrets out of memory artifacts; reference them by environment variable only.
+* **Security Policies**: Sanitize secrets in all output (logs, hooks, diffs, memory). Blocklist patterns for API keys, tokens, and `.env` values; if a secret appears in a tool call or artifact, truncate it and treat the call as blocked until manually reviewed.

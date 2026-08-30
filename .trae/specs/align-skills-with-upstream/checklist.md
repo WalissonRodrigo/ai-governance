@@ -1,0 +1,5 @@
+- [x] Documentação de melhorias para **graphify** adicionada ao SKILL.md
+- [x] Documentação de melhorias para **awesome-design-md** adicionada ao SKILL.md
+- [x] Documentação de melhorias para **get-shit-done** adicionada ao SKILL.md
+- [x] Documentação de melhorias para **everything-claude-code** adicionada ao SKILL.md
+- [x] Documentação de melhorias para **ui-ux-pro-max** adicionada ao SKILL.md

@@ -44,3 +44,53 @@ Every interactive component (buttons, inputs, select menus, dialogs, cards) MUST
 - **Zero Hardcoded Magic Numbers**: Rely on semantic CSS custom properties or Tailwind design tokens.
 - **Micro-Interactions**: Use modern cubic-bezier easing (`cubic-bezier(0.16, 1, 0.3, 1)`) with durations between `150ms` and `250ms`.
 - **Hardware Acceleration**: Confine animations to `transform` and `opacity` to avoid layout reflows.
+
+---
+
+## 5. Design Token Architecture (Three Layers)
+Organize every visual decision into a three-layer token system so components stay consistent and themes remain swappable:
+
+1. **Primitive** — raw values: hex colors, `px`/`rem` sizes, radii. Never consumed directly by components.
+2. **Semantic** — intent-bound abstractions: `--color-bg-surface`, `--space-md`, `--radius-card`.
+3. **Component** — composites binding semantics to a specific part: `--button-primary-bg`, `--card-shadow`.
+
+```css
+:root {
+  /* primitive */
+  --blue-600: #2563eb;
+
+  /* semantic */
+  --color-brand-primary: var(--blue-600);
+  --space-md: 16px;
+
+  /* component */
+  --button-primary-bg: var(--color-brand-primary);
+}
+```
+Components reference only semantic and component tokens — never primitives — so a theme change never breaks implementation code.
+
+---
+
+## 6. Anti-Patterns (AI-Slop Detection)
+Avoid these recurring "AI-generated UI" tells; flag and remove them before delivery:
+
+- Decorative emojis in place of iconography.
+- Purple-to-pink gradients as the default "tech" background.
+- Centered landing blobs with floating badges and no layout purpose.
+- Missing `:hover`, `:focus-visible`, `:disabled`, or `:active` states.
+- Hardcoded hex values repeated across files instead of tokens.
+- Oversized, unnecessary hero sections; fake depth (excessive `box-shadow`).
+- Inconsistent radii/spacings (random 13px, 21px values not on the 8pt grid).
+
+---
+
+## 7. QA Checklist (5 Dimensions)
+Run this gate on every generated UI before signaling completion:
+
+| Dimension | Checks |
+|---|---|
+| **Visual** | 60-30-10 respected; tokens used (no magic numbers); 8pt grid; no AI-slop anti-patterns |
+| **Interaction** | All 8 states implemented; micro-interactions 150–250ms on `transform`/`opacity` |
+| **Light/Dark** | Both themes defined; token variables drive colors (no hardcoded light-only values) |
+| **Consistency** | Radii, spacing, typography, and shadows match the design tokens; one source of truth |
+| **Accessibility** | Contrast >= 4.5:1 (3:1 large); keyboard traversal; ARIA states; `:focus-visible` outlines |

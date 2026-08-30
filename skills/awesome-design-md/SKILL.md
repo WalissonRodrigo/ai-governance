@@ -2,7 +2,7 @@
 name: awesome-design-md
 description: Architectural specifications for UI/UX, Design Systems, Design Tokens, and style guides in standardized Markdown (DESIGN.md / STYLEGUIDE.md).
 metadata:
-  version: "2.0.0"
+  version: "2.1.0"
   audience: developers
 ---
 
@@ -14,14 +14,26 @@ Operate as a Frontend Architect and Design Systems Specialist. Standardize inter
 - Starting or refactoring web, mobile, or desktop application UIs.
 - Defining semantic Design Tokens (colors, typography, spacing, shadows, radii).
 - Documenting component interaction matrices and visual consistency rules.
+- Reconciling a new product UI against a reference design system.
 
 ## Standard `DESIGN.md` Structure
 
-### 1. Foundation Tokens
+### 1. Design Tokens (Three-Layer Architecture)
+Tokens are structured in three layers so primitives stay reusable, semantics carry intent, and components bind both:
+
+1. **Primitive** — raw design values (`px`, `rem`, hex colors): `--space-4: 4px`, `--color-blue-600: #2563eb`.
+2. **Semantic** — abstractions giving the UI meaning: `--color-primary`, `--spacing-medium`.
+3. **Component** — composites that bind primitives and semantics to a specific component: `--button-primary-bg`.
+
 ```markdown
 ## 1. Design Tokens
 
-### Color Palette (Semantic Tokens)
+### Primitives
+- `--space-4`: 4px
+- `--radius-sm`: 4px
+- `--border-width`: 1px
+
+### Semantic Tokens
 | Token | Light Value | Dark Value | Intended Usage |
 |---|---|---|---|
 | `--color-bg-primary` | `#ffffff` | `#0f172a` | Main page background |
@@ -30,6 +42,10 @@ Operate as a Frontend Architect and Design Systems Specialist. Standardize inter
 | `--color-text-main` | `#0f172a` | `#f8fafc` | High-contrast headers and body |
 | `--color-text-muted` | `#64748b` | `#94a3b8` | Subtitles, placeholders, and captions |
 | `--color-feedback-err` | `#dc2626` | `#ef4444` | Form errors and critical alerts |
+
+### Component Tokens
+- `--button-primary-bg`: var(--color-brand-primary)
+- `--card-shadow`: 0 1px 3px rgba(0,0,0,0.1)
 
 ### Typography Scale
 | Level | Size / Line-Height | Weight | Applied Elements |
@@ -58,3 +74,21 @@ For every interactive UI component, explicitly define strict states:
 ## Token Economy
 - Use dense Markdown tables instead of long descriptive paragraphs.
 - Reuse token references instead of repeating raw hex values in code generation.
+
+## Validating a Design System with `preview.html`
+Generate a browser preview from the `DESIGN.md` to validate the design system visually before or during implementation:
+
+1. Create a `preview/` directory at the project root.
+2. Copy the generated `DESIGN.md` into it as `preview/DESIGN.md`.
+3. Render the markdown to HTML with `markdown-it-cli`:
+```bash
+rtk npx markdown-it-cli -i preview/DESIGN.md -o preview/preview.html --html
+```
+4. Open `preview/preview.html` in the browser.
+5. Optional: emit CSS from the tokens with Style Dictionary and import it into the preview:
+```bash
+rtk npx style-dictionary build --config style-dictionary.config.js
+```
+   → produces `preview/tokens.css`, which can be linked from `preview.html`.
+
+For an unimplemented or unfamiliar product, anchor token decisions to a reference design system (e.g., Shopify, Stripe, or Adobe) so palette, type scale, and spacing follow a proven rhythm instead of ad-hoc choices.
