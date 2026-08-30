@@ -34,8 +34,9 @@ Operate as a Software Architect focused on structural analysis and token economy
 ### 2. Local Script Execution
 Execute the bundled Python extractor to inspect dependencies without dumping source files into context:
 ```bash
-python <SKILLS_DIR>/scripts/graphify.py "<project-path>" [--format mermaid|json|summary] [--depth N] [--force]
+python <SKILL_DIR>/scripts/graphify.py "<project-path>" [--format mermaid|json|summary] [--depth N] [--force]
 ```
+Note: `<SKILL_DIR>` resolves to the directory where this `SKILL.md` is installed (e.g., `~/.claude/skills/graphify`).
 
 Supported output formats:
 - `summary` (default): high-coupling nodes, entry points, and edge count in dense text.
