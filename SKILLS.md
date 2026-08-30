@@ -46,3 +46,8 @@ Active skills available in the environment for proactive execution:
 - **Description:** Configura o DeepSeek Harness (DSH) com os plugins/forks do usuário (`dsh-vsceditor` i18n, `dsh-llm-failover` fix, `dsh-tier-router`/tier-preset-discovery, `dsh-vscode-theme`) até a adoção oficial das issues; integra as skills de `~/.claude/skills` ao DSH (`customSkillDirs`/`~/.agents/skills`).
 - **Location:** `~/.claude/skills/configure-dsh-plugins/` (espelhado em `~/.agents/skills/` e `./skills/` no workspace)
 - **Trigger:** Instalar/corrigir plugins do DSH no perfil `$DSH_HOME/profiles/web`, sincronizar lockfile stale, ou conectar skills `.claude` ao DSH.
+
+## 10. `security-audit-five`
+- **Description:** Stack-aware 5-vector security audit (tenant isolation, frontend-only RBAC, IDOR, hardcoded secrets, XSS) with evidence-only reporting, full route coverage, strengths proof, and auto-generated visual PDF + GitHub-ready issues.
+- **Location:** `~/.claude/skills/security-audit-five/` or `~/.config/opencode/skills/security-audit-five/` (mirrored in `./skills/security-audit-five/` in workspace)
+- **Trigger:** Any 5-vector review — "audit security", "RLS/tenant isolation", "RBAC/permissions", "IDOR", "hardcoded secrets", "XSS/sanitize", or pre-release pentest.

@@ -28,7 +28,7 @@ Operate as a Software Architect focused on structural analysis and token economy
 ### 2. Local Script Execution
 Execute the bundled Python extractor to inspect dependencies without dumping source files into context:
 ```bash
-python <SKILLS_DIR>/graphify/scripts/graphify.py "<project-path>" [--format mermaid|json|summary] [--depth N]
+python <SKILLS_DIR>/scripts/graphify.py "<project-path>" [--format mermaid|json|summary] [--depth N]
 ```
 
 

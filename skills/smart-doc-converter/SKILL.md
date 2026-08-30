@@ -22,7 +22,7 @@ Automatically trigger this workflow whenever a file with any of the following ex
 ### Step 1: Run Conversion
 Execute the bundled Python script to convert the document into Markdown:
 
-python <SKILL_DIR>/scripts/convert.py "<path/to/document.pdf>"
+python <SKILLS_DIR>/scripts/convert.py "<path/to/document.pdf>"
 
 Options:
 - Default output: Creates `<source-path>.md` alongside original file.
