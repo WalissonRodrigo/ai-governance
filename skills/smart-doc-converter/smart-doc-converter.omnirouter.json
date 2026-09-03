@@ -1,0 +1,60 @@
+{
+  "name": "smart-doc-converter",
+  "version": "2.1.0",
+  "description": "Universal document converter (PDF, Word, Excel, PowerPoint) to Markdown. Intercepts binary files before reading to optimize token consumption and preserve tabular data.",
+  "mode": "auto",
+  "enabled": true,
+  "source_provider": "local",
+  "tags": [
+    "pdf",
+    "docx",
+    "xlsx",
+    "pptx",
+    "markdown",
+    "converter",
+    "markitdown",
+    "token-economy",
+    "tables"
+  ],
+  "schema": {
+    "input": {
+      "type": "object",
+      "properties": {
+        "filePath": {
+          "type": "string",
+          "description": "Binary document path (.pdf/.docx/.xlsx/.pptx)."
+        },
+        "outputPath": {
+          "type": "string",
+          "description": "Custom .md output (default: <source>.md or .ai-cache/)."
+        },
+        "force": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "required": [
+        "filePath"
+      ]
+    },
+    "output": {
+      "type": "object",
+      "properties": {
+        "markdownPath": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "handlerCode": "---\nname: smart-doc-converter\ndescription: Universal document converter (PDF, Word, Excel, PowerPoint) to Markdown. Intercepts binary files before reading to optimize token consumption and preserve tabular data.\nmetadata:\n  version: \"2.1.0\"\n  audience: developers\n---\n\n# Smart Doc Converter\n\nOperate under a strict token-conservation protocol. **Never read raw binary documents directly** (`.pdf`, `.docx`, `.doc`, `.xlsx`, `.xls`, `.pptx`, `.ppt`). Always convert them to Markdown first.\n\n## Trigger Conditions\nAutomatically trigger this workflow whenever a file with any of the following extensions is referenced, attached, or requested:\n- PDF: `.pdf`\n- Word: `.docx`, `.doc`\n- Excel: `.xlsx`, `.xls`\n- PowerPoint: `.pptx`, `.ppt`\n\n## Execution Protocol\n\n### Step 1: Run Conversion\nExecute the bundled Python script to convert the document into Markdown:\n\npython <SKILL_DIR>/scripts/convert.py \"<path/to/document.pdf>\"\n\nOptions:\n- Default output: Creates `<source-path>.md` alongside original file.\n- Custom output: `python <SKILL_DIR>/scripts/convert.py \"<path/to/document.pdf>\" \".ai-cache/document.md\"`\n- Force conversion: `python <SKILL_DIR>/scripts/convert.py \"<path/to/document.pdf>\" --force`\n\nNote: `<SKILL_DIR>` resolves to the directory where this `SKILL.md` is installed.\n\n### Step 2: Ingest the Markdown File\n- Inspect the generated `.md` file using standard reading tools (`read` / `grep`).\n- Treat the generated Markdown as the single source of truth for text, tables, and document layout.\n\n### Step 3: Respond to User\n- Provide answers, data extraction, or summaries based solely on the generated Markdown.\n- Keep internal conversion mechanics silent unless the user explicitly asks.\n\n## Caching Behavior\n- The script checks modification times (`mtime`).\n- If the output `.md` already exists and is newer than the source document, conversion is skipped.\n- Use `--force` to bypass cache when needed.",
+  "metadata": {
+    "skillMdPath": "skills/smart-doc-converter/SKILL.md",
+    "notes": "OmniRoute marketplace pattern: handlerCode carries the SKILL.md text as documentation; execution is model-guided tool calls. Replace apiKeyId with your key id. Bundled scripts NOT embedded - kept in repo; agent runs them from the skill dir per SKILL.md.",
+    "scripts": [
+      "skills/smart-doc-converter/scripts/convert.py"
+    ]
+  }
+}

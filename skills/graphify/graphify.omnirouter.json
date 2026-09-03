@@ -1,0 +1,70 @@
+{
+  "name": "graphify",
+  "version": "2.0.0",
+  "description": "Codebase dependency graph extraction, architectural topology mapping, and blast-radius analysis with minimal token footprint.",
+  "mode": "auto",
+  "enabled": true,
+  "source_provider": "local",
+  "tags": [
+    "architecture",
+    "dependencies",
+    "topology",
+    "blast-radius",
+    "mermaid",
+    "refactoring",
+    "entry-points"
+  ],
+  "schema": {
+    "input": {
+      "type": "object",
+      "properties": {
+        "targetPath": {
+          "type": "string",
+          "description": "Root directory or module path to map."
+        },
+        "format": {
+          "type": "string",
+          "enum": [
+            "summary",
+            "mermaid",
+            "json"
+          ],
+          "default": "summary"
+        }
+      },
+      "required": [
+        "targetPath"
+      ]
+    },
+    "output": {
+      "type": "object",
+      "properties": {
+        "graph": {
+          "type": "string",
+          "description": "Condensed graph (mermaid/JSON/summary)."
+        },
+        "entryPoints": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "blastRadius": {
+          "type": "string"
+        },
+        "outputPath": {
+          "type": "string",
+          "description": "Path in .ai-cache/ if graph was persisted."
+        }
+      }
+    }
+  },
+  "handlerCode": "---\nname: graphify\ndescription: Codebase dependency graph extraction, architectural topology mapping, and blast-radius analysis with minimal token footprint.\nmetadata:\n  version: \"2.0.0\"\n  audience: developers\n---\n\n# Graphify — Codebase Topology & Dependency Graph\n\nOperate as a Software Architect focused on structural analysis and token economy. Avoid reading dozens of full files into the context window. Use `graphify` to extract relationships, entry points, and blast radiuses before modifying code.\n\n## Workflow\n1. Run the bundled extractor against the target root (see [Local Script Execution](#2-local-script-execution)).\n2. Review the condensed graph and identify high-coupling nodes and entry points.\n3. Drill into only the 2–3 module files with the largest blast radius to confirm contracts.\n4. Store the raw graph or intermediate JSON in `.ai-cache/` when the workspace is large.\n\n## When to Use\n- Exploring unfamiliar repositories or workspaces.\n- Planning multi-file refactoring or API contract modifications.\n- Calculating blast radiuses prior to architectural changes.\n- Generating visual architecture diagrams (`mermaid` / `graph TD`).\n\n## Operational Capabilities\n\n### 1. Structural Dependency Mapping\n- **Input:** Root directory or selected module path.\n- **Output:** Condensed Mermaid graph or structured JSON containing:\n  - System entry points.\n  - Import/Export dependency edges (`A -> B`).\n  - High-coupling nodes (critical hub components).\n\n### 2. Local Script Execution\nExecute the bundled Python extractor to inspect dependencies without dumping source files into context:\n```bash\npython <SKILL_DIR>/scripts/graphify.py \"<project-path>\" [--format mermaid|json|summary] [--depth N] [--force]\n```\nNote: `<SKILL_DIR>` resolves to the directory where this `SKILL.md` is installed (e.g., `~/.claude/skills/graphify`).\n\nSupported output formats:\n- `summary` (default): high-coupling nodes, entry points, and edge count in dense text.\n- `mermaid`: ready-to-paste `graph TD` diagram for architecture documentation.\n- `json`: machine-readable schema `{ nodes: [{id, source_file, entry_point, coupling}], edges: [{from, to, type}] }` for tooling and further analysis.\n\nIncremental caching: intermediate graphs are persisted under `<project>/.ai-cache/graphify/` and reused on subsequent runs. Pass `--force` to re-extract when the source tree has drifted.\n\n\n### 3. Manual Tool-Use Fallback (Zero Token Waste)\nWhen running natively via built-in tools (`glob`, `grep`):\n1. Index the workspace tree using `glob`.\n2. Extract module signatures using `grep` (filter `import`, `export`, `require`, `using`).\n3. Synthesize findings into a concise Mermaid diagram:\n   ```mermaid\n   graph TD\n     Client[lib/client.js] --> Host[lib/host.js]\n     Host --> Bridge[vscode-ext/dsh-bridge/extension.js]\n   ```\n4. Read only the 2–3 files strictly necessary for the active task.\n",
+  "metadata": {
+    "skillMdPath": "skills/graphify/SKILL.md",
+    "notes": "OmniRoute marketplace pattern: handlerCode carries the SKILL.md text as documentation; execution is model-guided tool calls. Replace apiKeyId with your key id. Bundled scripts NOT embedded - kept in repo; agent runs them from the skill dir per SKILL.md.",
+    "scripts": [
+      "skills/graphify/scripts/graphify.py"
+    ]
+  }
+}

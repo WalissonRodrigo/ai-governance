@@ -1,0 +1,70 @@
+{
+  "name": "get-shit-done",
+  "version": "2.0.0",
+  "description": "Pragmatic execution and continuous delivery framework structured in atomic phases (Discovery -> Blueprint -> Execution -> Verification -> Checkpoint) with extreme token optimization.",
+  "mode": "auto",
+  "enabled": true,
+  "source_provider": "local",
+  "tags": [
+    "execution",
+    "delivery",
+    "planning",
+    "blueprint",
+    "todowrite",
+    "roadmap",
+    "verification",
+    "checkpoint",
+    "refactoring"
+  ],
+  "schema": {
+    "input": {
+      "type": "object",
+      "properties": {
+        "objective": {
+          "type": "string",
+          "description": "End-to-end objective to execute (feature, refactor, bugfix)."
+        },
+        "scopePaths": {
+          "type": "string",
+          "description": "Paths in scope (ex: src/, tests/). Default: repo root."
+        },
+        "constraints": {
+          "type": "string",
+          "description": "Constraints, success criteria, non-goals."
+        }
+      },
+      "required": [
+        "objective"
+      ]
+    },
+    "output": {
+      "type": "object",
+      "properties": {
+        "plan": {
+          "type": "string",
+          "description": "Atomic phase plan (Discovery->Blueprint->Execution->Verification->Checkpoint)."
+        },
+        "checklistPath": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "planned",
+            "in_progress",
+            "completed",
+            "blocked"
+          ]
+        }
+      }
+    }
+  },
+  "handlerCode": "---\nname: get-shit-done\ndescription: Pragmatic execution and continuous delivery framework structured in atomic phases (Discovery -> Blueprint -> Execution -> Verification -> Checkpoint) with extreme token optimization.\nmetadata:\n  version: \"2.0.0\"\n  audience: developers\n---\n\n# Get Shit Done (GSD) — Pragmatic Execution Framework\n\nOperate as a Senior Engineer focused on fast, secure, and verifiable delivery. The GSD framework prevents analysis paralysis, enforces context discipline, and ensures production-ready code with continuous validation.\n\n## When to Use\n- Feature implementations, multi-file refactoring, or non-trivial bug fixes.\n- When instructed to \"execute\", \"build\", \"continue\", or complete end-to-end tasks.\n- Whenever an objective involves 3 or more sequential interdependent steps.\n\n## The 5 Atomic GSD Phases\n\n### Phase 1: Discovery (Rapid Mapping)\n- Never assume codebase states — use `glob`, `grep`, and `graphify` to locate relevant entry points.\n- Identify existing unit/integration test suites before changing any source file.\n- Inspect interface contracts and dependencies.\n- Discuss and refine requirements before any planning: capture open questions, constraints, and success criteria explicitly. An ambiguous objective must be resolved here — planning on top of a fuzzy Discovery produces rework.\n\n### Phase 2: Blueprint (Atomic Planning)\n- Create or update the execution checklist using task tracking tools (e.g., `todowrite`).\n- Decompose the implementation into atomic sub-tasks (max 1–2 files per step).\n- Define unambiguous Definition of Done (DoD) for each stage.\n- Persist the plan in a machine-readable format (YAML or XML) and write progress to `ROADMAP.md` (intent) and `STATE.md` (current phase, completed steps, open items). These files are the source of truth across sessions: on resume, read `STATE.md` and continue from the recorded phase instead of re-planning.\n\n### Phase 3: Execution (Surgical Edits)\n- Apply targeted modifications (`edit` over full-file `write` replacements).\n- Strictly adhere to idiomatic patterns, naming schemes, and types present in the repository.\n- Include comments only when explaining non-obvious domain logic or constraints.\n- Maintain zero conversational chatter during active code modification.\n\n### Phase 4: Verification (Immediate Validation)\n- Run unit/integration tests locally via CLI (prefixed with `rtk` when available).\n- Execute linters, type checks, and formatters (`tsc`, `ruff`, `cargo test`, etc.).\n- Automatically remediate failed assertions without waiting for manual intervention.\n\n### Phase 5: Checkpoint & Handoff\n- Verify clean Git workspace state (`git status`, `git diff`).\n- Mark completed tasks in real time.\n- Update `STATE.md` (advance phase, mark completed steps) and keep `ROADMAP.md` aligned.\n- Provide a high-density summary of what was delivered and exact commands to verify.\n\n## Golden Rules\n1. **Never Assume, Always Verify:** Automated checks and syntax validation are mandatory before signaling completion.\n2. **Atomic Commits:** Keep change sets cohesive and traceable.\n3. **Zero Token Waste:** Deliver direct, objective outputs without narrative filler.\n4. **Persistent Progress:** `ROADMAP.md` and `STATE.md` are always present during multi-step work; a resumed session starts from `STATE.md`.",
+  "metadata": {
+    "skillMdPath": "skills/get-shit-done/SKILL.md",
+    "notes": "OmniRoute marketplace pattern: handlerCode carries the SKILL.md text as documentation; execution is model-guided tool calls. Replace apiKeyId with your key id."
+  }
+}

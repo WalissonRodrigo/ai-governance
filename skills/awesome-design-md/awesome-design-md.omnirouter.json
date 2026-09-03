@@ -1,0 +1,60 @@
+{
+  "name": "awesome-design-md",
+  "version": "2.1.0",
+  "description": "Architectural specifications for UI/UX, Design Systems, Design Tokens, and style guides in standardized Markdown (DESIGN.md / STYLEGUIDE.md).",
+  "mode": "auto",
+  "enabled": true,
+  "source_provider": "local",
+  "tags": [
+    "design-system",
+    "design-tokens",
+    "styleguide",
+    "DESIGN.md",
+    "frontend",
+    "ux",
+    "components"
+  ],
+  "schema": {
+    "input": {
+      "type": "object",
+      "properties": {
+        "targetPath": {
+          "type": "string",
+          "description": "App or UI root to specify/document."
+        },
+        "project": {
+          "type": "string",
+          "description": "Project name for DESIGN.md/STYLEGUIDE.md header."
+        },
+        "scope": {
+          "type": "string",
+          "description": "Scope: tokens, components, layout, all. Default: all."
+        }
+      },
+      "required": [
+        "targetPath"
+      ]
+    },
+    "output": {
+      "type": "object",
+      "properties": {
+        "specPath": {
+          "type": "string",
+          "description": "Path of DESIGN.md or STYLEGUIDE.md written."
+        },
+        "tokens": {
+          "type": "string",
+          "description": "Token layers defined (primitive/semantic/component)."
+        },
+        "summary": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "handlerCode": "---\nname: awesome-design-md\ndescription: Architectural specifications for UI/UX, Design Systems, Design Tokens, and style guides in standardized Markdown (DESIGN.md / STYLEGUIDE.md).\nmetadata:\n  version: \"2.1.0\"\n  audience: developers\n---\n\n# Awesome Design MD — Architectural UI & Design System Specs\n\nOperate as a Frontend Architect and Design Systems Specialist. Standardize interface contracts, design tokens, and layout guidelines inside high-density `DESIGN.md` or `STYLEGUIDE.md` files without verbose boilerplate.\n\n## When to Use\n- Starting or refactoring web, mobile, or desktop application UIs.\n- Defining semantic Design Tokens (colors, typography, spacing, shadows, radii).\n- Documenting component interaction matrices and visual consistency rules.\n- Reconciling a new product UI against a reference design system.\n\n## Standard `DESIGN.md` Structure\n\n### 1. Design Tokens (Three-Layer Architecture)\nTokens are structured in three layers so primitives stay reusable, semantics carry intent, and components bind both:\n\n1. **Primitive** — raw design values (`px`, `rem`, hex colors): `--space-4: 4px`, `--color-blue-600: #2563eb`.\n2. **Semantic** — abstractions giving the UI meaning: `--color-primary`, `--spacing-medium`.\n3. **Component** — composites that bind primitives and semantics to a specific component: `--button-primary-bg`.\n\n```markdown\n## 1. Design Tokens\n\n### Primitives\n- `--space-4`: 4px\n- `--radius-sm`: 4px\n- `--border-width`: 1px\n\n### Semantic Tokens\n| Token | Light Value | Dark Value | Intended Usage |\n|---|---|---|---|\n| `--color-bg-primary` | `#ffffff` | `#0f172a` | Main page background |\n| `--color-bg-surface` | `#f8fafc` | `#1e293b` | Cards, modals, and containers |\n| `--color-brand-primary`| `#2563eb` | `#3b82f6` | Primary actions and active links |\n| `--color-text-main` | `#0f172a` | `#f8fafc` | High-contrast headers and body |\n| `--color-text-muted` | `#64748b` | `#94a3b8` | Subtitles, placeholders, and captions |\n| `--color-feedback-err` | `#dc2626` | `#ef4444` | Form errors and critical alerts |\n\n### Component Tokens\n- `--button-primary-bg`: var(--color-brand-primary)\n- `--card-shadow`: 0 1px 3px rgba(0,0,0,0.1)\n\n### Typography Scale\n| Level | Size / Line-Height | Weight | Applied Elements |\n|---|---|---|---|\n| Display | 2.25rem (36px) / 1.2 | Bold (700) | Hero headers |\n| H1 | 1.5rem (24px) / 1.3 | SemiBold (600) | Page titles |\n| H2 | 1.25rem (20px) / 1.4 | Medium (500) | Section and card headers |\n| Body | 0.875rem (14px) / 1.5 | Regular (400) | Main content and inputs |\n| Caption | 0.75rem (12px) / 1.4 | Regular (400) | Metadata and helper text |\n\n### Spacing & Layout\n- **Base Grid:** 8pt (`4px, 8px, 12px, 16px, 24px, 32px, 48px, 64px`)\n- **Border Radii:** `sm: 4px`, `md: 8px`, `lg: 12px`, `full: 9999px`\n- **Breakpoints:** `sm: 640px`, `md: 768px`, `lg: 1024px`, `xl: 1280px`\n```\n\n### 2. Component Blueprint Matrix\nFor every interactive UI component, explicitly define strict states:\n- `Default`, `Hover`, `Active`, `Focus-Visible` (outline 2px), `Disabled`, `Loading`, `Empty`, `Error`.\n\n### 3. Accessibility Guidelines (A11y)\n- Minimum text contrast ratio: **4.5:1** (WCAG AA).\n- Complete keyboard navigation support (`Tab`, `Shift+Tab`, `Enter`, `Space`, `Escape`).\n- Semantic ARIA attributes (`aria-expanded`, `aria-label`, `aria-live`) where dynamicity exists.\n\n## Token Economy\n- Use dense Markdown tables instead of long descriptive paragraphs.\n- Reuse token references instead of repeating raw hex values in code generation.\n\n## Validating a Design System with `preview.html`\nGenerate a browser preview from the `DESIGN.md` to validate the design system visually before or during implementation:\n\n1. Create a `preview/` directory at the project root.\n2. Copy the generated `DESIGN.md` into it as `preview/DESIGN.md`.\n3. Render the markdown to HTML with `markdown-it-cli`:\n```bash\nrtk npx markdown-it-cli -i preview/DESIGN.md -o preview/preview.html --html\n```\n4. Open `preview/preview.html` in the browser.\n5. Optional: emit CSS from the tokens with Style Dictionary and import it into the preview:\n```bash\nrtk npx style-dictionary build --config style-dictionary.config.js\n```\n   → produces `preview/tokens.css`, which can be linked from `preview.html`.\n\nFor an unimplemented or unfamiliar product, anchor token decisions to a reference design system (e.g., Shopify, Stripe, or Adobe) so palette, type scale, and spacing follow a proven rhythm instead of ad-hoc choices.",
+  "metadata": {
+    "skillMdPath": "skills/awesome-design-md/SKILL.md",
+    "notes": "OmniRoute marketplace pattern: handlerCode carries the SKILL.md text as documentation; execution is model-guided tool calls. Replace apiKeyId with your key id."
+  }
+}

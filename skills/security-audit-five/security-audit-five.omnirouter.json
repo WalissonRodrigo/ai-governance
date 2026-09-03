@@ -1,0 +1,153 @@
+{
+  "name": "security-audit-five",
+  "version": "1.1.0",
+  "description": "Stack-aware 5-vector security audit (tenant isolation, frontend RBAC, IDOR, hardcoded secrets, XSS) — evidence-only, full route coverage, strengths proof. Decoupled reporting: Markdown always (zero deps), PDF optional (isolated venv) + GitHub-ready issues.",
+  "mode": "auto",
+  "enabled": true,
+  "source_provider": "local",
+  "tags": [
+    "security",
+    "audit",
+    "pentest",
+    "tenant-isolation",
+    "rls",
+    "rbac",
+    "idor",
+    "secrets",
+    "gitleaks",
+    "xss",
+    "supabase",
+    "prisma",
+    "owasp",
+    "github-issues"
+  ],
+  "schema": {
+    "input": {
+      "type": "object",
+      "properties": {
+        "targetPath": {
+          "type": "string",
+          "description": "Repo path or scope to audit (ex: ./src, ./supabase/migrations, docker-compose.yml). Default: repo root."
+        },
+        "project": {
+          "type": "string",
+          "description": "Project name for report cover (default: git root or package.json#name)."
+        },
+        "scope": {
+          "type": "string",
+          "description": "Audit scope text for report cover (ex: src/, supabase/migrations, docker-compose.yml)."
+        },
+        "vectors": {
+          "type": "array",
+          "description": "Subset of vectors to run. Default: all 5.",
+          "items": {
+            "type": "string",
+            "enum": [
+              "tenant-isolation",
+              "rbac",
+              "idor",
+              "secrets",
+              "xss"
+            ]
+          },
+          "default": [
+            "tenant-isolation",
+            "rbac",
+            "idor",
+            "secrets",
+            "xss"
+          ]
+        },
+        "format": {
+          "type": "string",
+          "enum": [
+            "md",
+            "both",
+            "pdf"
+          ],
+          "default": "md",
+          "description": "md = Markdown only (zero deps, always works). both/pdf = also try PDF via isolated venv (never fail audit if missing)."
+        }
+      },
+      "required": [
+        "targetPath"
+      ]
+    },
+    "output": {
+      "type": "object",
+      "properties": {
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "category": {
+                "type": "string"
+              },
+              "severity": {
+                "type": "string",
+                "enum": [
+                  "critical",
+                  "high",
+                  "medium",
+                  "low",
+                  "info"
+                ]
+              },
+              "file": {
+                "type": "string"
+              },
+              "line": {
+                "type": "string"
+              },
+              "snippet": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "exploitability": {
+                "type": "string"
+              },
+              "impact": {
+                "type": "string"
+              },
+              "fix": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "strengths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "findingsJsonPath": {
+          "type": "string"
+        },
+        "markdownReportPath": {
+          "type": "string"
+        },
+        "pdfReportPath": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "handlerCode": "---\nname: security-audit-five\ndescription: Stack-aware 5-vector security audit (tenant isolation, frontend RBAC, IDOR, hardcoded secrets, XSS) — evidence-only, full route coverage, strengths proof. Decoupled reporting: Markdown always (zero deps), PDF optional (isolated venv) + GitHub-ready issues.\nmetadata:\n  version: \"1.1.0\"\n  audience: developers\n---\n\n# Security Audit Five — Stack-Aware 5-Vector Audit (Hybrid Decoupled)\n\nEvidence-only. Zero speculation. Every finding: `file:line` + snippet + exploitability + severity. Enumerate audited files line-by-line; also report verified strengths to prove coverage. **Reporting is decoupled**: Markdown is the primary deliverable (works everywhere); PDF is an optional enhancement when Python is available.\n\n## When to Use\n- Pre-release security review, pentest prep, due diligence.\n- User says \"audit security\", \"5 flaws\", \"RLS/tenant\", \"IDOR\", \"secrets\", \"XSS\".\n- Any request mapping to the 5 vectors below.\n\n## Execution Modes — Decoupled Design (MANDATORY)\n\n| Mode | Deliverable | Deps | When |\n|---|---|---|---|\n| **A — Markdown Primary (ALWAYS)** | `docs/security-audit/relatorio-auditoria-seguranca.md` + `docs/security-audit/findings.json` | None | Every run. Works in TRAE/Cursor/Windsurf/VSCode/DSH/Claude Code, offline, read-only FS fallback to `findings.json` only. |\n| **B — PDF Optional (OPT-IN)** | `docs/security-audit/relatorio-auditoria-seguranca.pdf` (A4, palette chips, charts) | `python3` + `reportlab==4.2.0` + `matplotlib==3.9.2` in isolated `.venv` | Only if `python3 --version` succeeds AND user/env allows venv. Never block Mode A. |\n\nRule: **Never fail the audit if PDF deps are missing**. Emit Mode A, warn, and print the one-liner to generate PDF later (see Technical Rules). Do not `sys.exit(1)` on missing deps.\n\n## Phase 0 — Stack Fingerprint (MANDATORY FIRST)\n\nDetect before auditing. Adapt each vector. Output a table; reuse its terminology.\n\n| Dimension | Detect How | Examples |\n|---|---|---|\n| Language | `glob` manifests | `package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`, `pom.xml` |\n| Framework | deps + entry points | Next.js/NestJS/Express/Django/FastAPI/Spring/Gin/Rails/Laravel |\n| ORM / Query | deps + `grep` imports | Prisma/Drizzle/TypeORM/Sequelize/SQLAlchemy/Eloquent/GORM |\n| Auth | middleware + config | NextAuth/Auth.js/Supabase Auth/Clerk/Firebase/JWT/Passport/Devise |\n| Frontend | `src/` + framework | React/Vue/Svelte/Angular/Next/SSR/none |\n| Isolation | RLS/middleware/manual filter | Supabase RLS / `tenant_id` middleware / `user_id` WHERE |\n| Deploy | repo root | `Dockerfile`, `docker-compose.*`, `.github/workflows`, `helm/`, `*.tf` |\n\n1. `glob` manifests + `grep` for `supabase|prisma|drizzle|typeorm|sequelize|auth|clerk|firebase`.\n2. Read 2-3 entry files (router, middleware, `supabase/migrations`).\n3. Decide isolation: **RLS vs middleware vs manual `where:{userId}`**. If none, `ABSENT`.\n4. If category maps poorly (no frontend → skip vector 5 frontend part, state explicitly).\n\n> Do not start vectors until Phase 0 table is complete.\n\n## The 5 Vectors (Stack-Adapted)\n\n### 1 — DATABASE WITHOUT LOCK (Tenant/Owner Isolation)\nGoal: every list/search/aggregation/report/export filters by authenticated user/org/tenant.\n- **Supabase**: `ENABLE ROW LEVEL SECURITY` + policies `FOR SELECT/INSERT/UPDATE/DELETE USING (auth.uid() = user_id)`. Check `supabase/migrations/*.sql`.\n- **API-owned DB**: Every `findMany/findWhere/select/aggregate` must include `where:{tenantId|userId|orgId|workspaceId}` from `req.user`/`ctx.auth`. Grep: `findMany|findAll|find\\(|select\\(|aggregate|createQueryBuilder`.\n- Flag if replay with own token + forced `orgId` leaks cross-tenant.\n\n### 2 — BROWSER-DEFINED PERMISSION (Frontend-only RBAC)\nGoal: no privileged op relies solely on UI gating.\n- Inventory frontend gates: `isAdmin|canEdit|role===|useRole|hasPermission|<AdminOnly|v-if=\"admin\"` via `rg -n`.\n- For each gate, locate backend handler. Backend MUST check `req.user.role`/`hasRole('admin')` before write/admin.\n- Flag: `POST /admin/*`, `PUT /settings`, `DELETE /users/*` reachable with non-admin token.\n\n### 3 — IDOR (Object-Level Authorization)\nGoal: every `/:id`, `?id=`, `body.id` fetch/mutate/delete verifies ownership.\n- **Enumerate ALL handlers**: `rg -n \"router\\.|app\\.(get|post|put|patch|delete)|@Get|@Post|defineRoute\"`. No sampling.\n- Check: `if (obj.userId !== req.user.id && obj.orgId !== req.user.orgId) throw 403`. Joins count.\n- Also batch (`/bulk`, `ids: []`) and indirect refs (slug/uuid/seq int).\n\n### 4 — HARDCODED SECRETS (Exposed Keys)\nScan: source + `docker-compose.yml` + `Dockerfile` + `helm/values*.yaml` + `.github/workflows/*` + `*.tf` + `scripts/*` + `docs/*`.\n- Patterns: `api[_-]?key|secret|password|private[_-]?key|jwt.*secret|webhook.*secret|BEGIN PRIVATE KEY`.\n- Special: `${VAR:-defaultValue}` / `|| 'default'` where default is real credential. Require `if (!process.env.SECRET) throw`.\n- Frontend bundle: `rg -n \"NEXT_PUBLIC_|VITE_|REACT_APP_\"` — any secret in client code.\n- Git history: `git log --all -p -S \"secret|password|key\" --source` + `gitleaks`/`trufflehog` if available.\n- Severity `critical` if prod-used; `high` if known default.\n\n### 5 — UNSANITIZED INPUTS (XSS)\n- **Frontend**: `innerHTML|dangerouslySetInnerHTML|v-html|[innerHTML]|bypassSecurityTrustHtml|eval\\(|new Function\\(|javascript:` + markdown render without sanitizer. Check `DOMPurify|sanitize-html|marked` applied per sink.\n- **Backend**: user input into `sendMail({html:` / template literals / `res.send(` without `escape|sanitize`.\n- Flag stored vs reflected vs DOM.\n\n## Audit Rules (Non-Negotiable)\n\n1. **Evidence-only**: `file:line` + snippet + why exploitable + severity `critical|high|medium|low|info`. No hypothetical.\n2. **File-by-file, line-by-line**.\n3. **Strengths mandatory**: e.g., \"router `orders.ts:12-80` validates ownership on all 6 handlers\".\n4. **Category N/A**: state explicitly.\n5. **Exploitability note** per finding.\n6. **Severity palette**: `critical #B91C1C | high #EA580C | medium #D97706 | low #2563EB | strength #059669 | info #6B7280`.\n7. **Deduplicate trivial related** into one GitHub issue.\n\n## Workflow — 7 Phases (Decoupled)\n\n| # | Phase | Actions | Output |\n|---|---|---|---|\n| 0 | Fingerprint | Stack table + isolation mechanism | Scope + methodology note |\n| 1 | Tenant Isolation | RLS/policy or per-query filter audit | Findings + strengths |\n| 2 | RBAC | Frontend gate ↔ backend cross | Findings + strengths |\n| 3 | IDOR | Enumerate ALL route handlers | Coverage table |\n| 4 | Secrets | Code+config+compose+CI+Helm+TF+git+bundle | Findings |\n| 5 | XSS | Sink inventory + sanitizer verification | Findings |\n| 6 | Synthesis | Dedupe, severity sort, P1/P2/P3 | `findings.json` + chat report |\n| 7 | Report | **Mode A always**: `relatorio...md` + `findings.json`. **Mode B opt-in**: `relatorio...pdf` via `scripts/generate_report.py` if deps available. Copy generator to `docs/security-audit/` for later regeneration. |\n\nTooling: `rg -n` > `grep`; `ast-grep` for sinks; `glob` for manifests; `read` offset/limit for evidence. Never dump full files.\n\n## Evidence Contract (per finding)\n\n```\n[SEVERITY] file:line — Category\nCode: `exact snippet (1-3 lines)`\nWhy exploitable: one sentence\nExploitability: requires Z config? authenticated?\n```\n\nSort `critical → info` inside each vector.\n\n## Report Specification (MD primary, PDF mirrors it)\n\nLanguage `pt-BR`. Both MD and PDF share sections `a–f`; MD is source of truth when PDF unavailable.\n\n- **a) Capa**: title `Relatório de Auditoria de Segurança — <project>`, date `DD/MM/YYYY`, scope, methodology note = Phase 0 mapping paragraph.\n- **b) Resumo executivo**: totals per severity (chips palette), donut by severity + bar by category. In MD: ASCII tables + mermaid placeholders; in PDF: `matplotlib` images.\n- **c) Pontos fortes / fracos**: strengths with evidence vs central risks.\n- **d) Achados detalhados por categoria**: table per vector `Severidade | Arquivo:linha | Descrição` (snippet + exploitability collapsed in MD code fences).\n- **e) Recomendações priorizadas**: `P1` (critical/high, trivial exploit), `P2` (medium), `P3` (low). Each: action + file hint + effort.\n- **f) ISSUES PARA O GITHUB**: one delimited block per finding/group:\n  ```\n  --- ISSUE n ---\n  Title: [Segurança] <short>\n  Labels: security, severity:critical|high|medium|low\n  Body (Markdown ready):\n  ## Descrição\n  ## Evidência — arquivo:linha\n  ```code```\n  ## Por que é explorável\n  ## Impacto\n  ## Sugestão de correção\n  ## Critérios de aceite (checklist)\n  --- FIM ISSUE n ---\n  ```\n  Group trivial related (e.g., 5× `:-default`) into one.\n\n## Technical Generation Rules (Decoupled, Non-Blocking)\n\n- **Detection before execution**:\n  ```bash\n  if command -v python3 >/dev/null 2>&1 && python3 -c \"import sys; sys.exit(0 if sys.version_info>=(3,9) else 1)\"; then\n    echo \"PDF opt-in available\"\n  else\n    echo \"PDF skipped — Mode A (MD) only\"\n  fi\n  ```\n- **Never global install**. If PDF opted-in, isolated venv only:\n  ```bash\n  python3 -m venv docs/security-audit/.venv\n  source docs/security-audit/.venv/bin/activate  # Windows: .venv\\Scripts\\activate\n  pip install \"reportlab==4.2.0\" \"matplotlib==3.9.2\"\n  python docs/security-audit/generate_report.py --project \"my-app\" --findings docs/security-audit/findings.json --format both\n  # fallback: --format md always works, --format pdf requires deps, --format both tries pdf then md\n  ```\n  If venv fails (offline/PEP 668/read-only), emit MD and print: `pip install --user ...` alternative in comment — do not abort audit.\n- **Pin versions** to avoid supply-chain drift; do not `pip install reportlab matplotlib` unpinned.\n- **Leave generator** at `docs/security-audit/generate_report.py` (copied from `skills/security-audit-five/scripts/generate_report.py`) for later `both` regeneration.\n- **Verification** (only if PDF generated):\n  ```bash\n  python -c \"from PyPDF2 import PdfReader; print(len(PdfReader('docs/security-audit/relatorio-auditoria-seguranca.pdf').pages))\"\n  ```\n  If charts clipped/tables overflow, fix (font 7-8pt, wrap, paginate) and regenerate before delivery. If no PDF, verify `relatorio...md` renders in viewer.\n- **Stack-local alternative**: if `package.json` present and `python3` missing, offer `npx --yes md-to-pdf` or `pandoc` as HTML→PDF path — agent picks runtime of the project, not forced Python.\n\n## Strengths Template\n\n```\n✅ Vector 2 — Verified: middleware `src/middleware/rbac.ts:14` enforces role on all 8 admin routes; gates at `src/components/AdminPanel.tsx:22` are redundant only.\n```\n\n## When Category N/A — State It\n\n```\nVector 5 (frontend XSS): N/A — API-only (no bundle). Backend email template XSS still audited: `src/mailer/*:18` escapes via `escapeHtml()`.\n```\n\n## Deliverables Checklist (agent MUST return)\n\n- [ ] `docs/security-audit/findings.json` — structured findings (always)\n- [ ] `docs/security-audit/relatorio-auditoria-seguranca.md` — primary report (always, zero deps)\n- [ ] `docs/security-audit/generate_report.py` — copied generator (always, for later PDF)\n- [ ] `docs/security-audit/relatorio-auditoria-seguranca.pdf` — **only if** Mode B succeeded (verified pages); else note `PDF skipped — run with python3 to regenerate`\n- [ ] Chat findings: file-by-file, line-by-line + strengths + paths of all generated files\n\n## Invocation Example\n\n```bash\n# Mode A always — no deps, works in any IDE/sandbox\n# Agent writes findings.json + relatorio.md + copies generate_report.py\ncat docs/security-audit/findings.json\n\n# Mode B opt-in — when python3 available\npython3 -m venv docs/security-audit/.venv\nsource docs/security-audit/.venv/bin/activate\npip install \"reportlab==4.2.0\" \"matplotlib==3.9.2\"\npython docs/security-audit/generate_report.py --project \"my-app\" --findings docs/security-audit/findings.json --format both\n\n# Or directly via skill template (auto-detects, falls back to md)\npython skills/security-audit-five/scripts/generate_report.py --project \"my-app\" --format both\npython skills/security-audit-five/scripts/generate_report.py --project \"my-app\" --format md  # always works\n```\n\n## Anti-Patterns (DO NOT)\n\n- `sys.exit(1)` on missing `reportlab` — must fallback to MD.\n- Sample routes — enumerate ALL handlers.\n- Report without reading file (`rg -n`+`read` required).\n- Guess RLS — inspect migration SQL.\n- `pip install` global — always `.venv`.\n- Omit strengths — coverage proof required.\n- Hardcode project name — derive from `package.json#name` or git root.\n",
+  "metadata": {
+    "skillMdPath": "skills/security-audit-five/SKILL.md",
+    "generatorScript": "skills/security-audit-five/scripts/generate_report.py",
+    "deployedGenerator": "docs/security-audit/generate_report.py",
+    "language": "pt-BR",
+    "reportPrimary": "docs/security-audit/relatorio-auditoria-seguranca.md",
+    "reportSecondary": "docs/security-audit/relatorio-auditoria-seguranca.pdf",
+    "findings": "docs/security-audit/findings.json",
+    "notes": "OmniRoute marketplace pattern: handlerCode carries the SKILL.md text as documentation; execution is model-guided tool calls. Replace apiKeyId with your key id. scripts/generate_report.py NOT embedded (900+ lines) - kept in repo; agent copies it to docs/security-audit/ during audit per SKILL.md Phase 7."
+  }
+}

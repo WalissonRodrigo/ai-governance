@@ -1,0 +1,63 @@
+{
+  "name": "ui-ux-pro-max",
+  "version": "2.0.0",
+  "description": "Production-grade UI/UX engineering engine. Enforces WCAG 2.2 AA accessibility, cohesive Design Systems, exhaustive component state modeling, and performance-optimized micro-interactions.",
+  "mode": "auto",
+  "enabled": true,
+  "source_provider": "local",
+  "tags": [
+    "ui",
+    "ux",
+    "accessibility",
+    "wcag",
+    "frontend",
+    "design-system",
+    "micro-interactions",
+    "responsive"
+  ],
+  "schema": {
+    "input": {
+      "type": "object",
+      "properties": {
+        "task": {
+          "type": "string",
+          "description": "UI task (component, page, refactor) to design/implement."
+        },
+        "targetPath": {
+          "type": "string",
+          "description": "Files or route in scope."
+        },
+        "framework": {
+          "type": "string",
+          "description": "Frontend stack (ex: React, Vue, Next.js). Default: auto-detect."
+        }
+      },
+      "required": [
+        "task"
+      ]
+    },
+    "output": {
+      "type": "object",
+      "properties": {
+        "filesChanged": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "accessibilityNotes": {
+          "type": "string",
+          "description": "WCAG 2.2 AA contracts applied (states, focus, aria)."
+        },
+        "summary": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "handlerCode": "---\nname: ui-ux-pro-max\ndescription: Production-grade UI/UX engineering engine. Enforces WCAG 2.2 AA accessibility, cohesive Design Systems, exhaustive component state modeling, and performance-optimized micro-interactions.\nmetadata:\n  version: \"2.0.0\"\n  audience: developers\n---\n\n# UI/UX Pro Max — High-Performance Design & Frontend Architecture\n\nOperate as a Lead Product Designer and Senior Frontend Architect. Design and implement UI components that are visually distinct, fully accessible, and structurally bulletproof on the first iteration.\n\n## 1. Visual Hierarchy & Spatial Grid\n- **The 60-30-10 Rule**: 60% dominant neutral background, 30% structural/card layer, 10% high-contrast brand/action accent.\n- **8pt Fluid Grid**: Strictly use 4px/8px multiples for margins, paddings, and layout gaps (`4, 8, 12, 16, 24, 32, 48, 64px`).\n- **Typography Rhythm**: Clear typographic hierarchy (H1 -> H2 -> Body -> Caption) with line-height ratios between `1.3` (headings) and `1.5-1.6` (body).\n\n---\n\n## 2. Exhaustive Component State Matrix\nEvery interactive component (buttons, inputs, select menus, dialogs, cards) MUST implement 8 distinct states:\n\n| State | Visual Requirement | Accessibility Contract |\n|---|---|---|\n| **Default** | Base styling with sharp baseline contrast | Standard semantic markup (`<button>`, `<input>`) |\n| **Hover** | Subtle lift (`translateY(-1px)`) or background tint shift | Not triggered on touch devices |\n| **Active / Pressed** | Tactile feedback (`scale(0.98)` or inset shadow) | Immediate responsive transition |\n| **Focus-Visible** | High-contrast 2px solid outline with `outline-offset: 2px` | Mandatory for keyboard navigation (`:focus-visible`) |\n| **Disabled** | 50% opacity, distinct mute color, no hover elevation | `disabled`, `aria-disabled=\"true\"`, `pointer-events: none` |\n| **Loading** | Skeleton shimmer or inline SVG spinner | `aria-busy=\"true\"`, retains component dimensions |\n| **Empty** | Meaningful empty state graphic + clear CTA message | Clear landmark role (`role=\"region\"`) |\n| **Error** | Semantic red boundary/text with persistent alert badge | `aria-invalid=\"true\"`, `aria-describedby=\"err-id\"` |\n\n---\n\n## 3. Accessibility & Compliance (WCAG 2.2 AA)\n- **Contrast Thresholds**: Minimum **4.5:1** for regular text; **3:1** for large text (>=18pt or 14pt bold) and interactive UI borders.\n- **Keyboard Traversal**: Full navigation support via `Tab`, `Shift+Tab`, `Enter`, `Space`, and `Escape` for dismissal.\n- **Dynamic Semantics**: Explicit ARIA states (`aria-expanded`, `aria-controls`, `aria-live=\"polite\"`, `role=\"dialog\"`).\n\n---\n\n## 4. Modern CSS & Interaction Directives\n- **Zero Hardcoded Magic Numbers**: Rely on semantic CSS custom properties or Tailwind design tokens.\n- **Micro-Interactions**: Use modern cubic-bezier easing (`cubic-bezier(0.16, 1, 0.3, 1)`) with durations between `150ms` and `250ms`.\n- **Hardware Acceleration**: Confine animations to `transform` and `opacity` to avoid layout reflows.\n\n---\n\n## 5. Design Token Architecture (Three Layers)\nOrganize every visual decision into a three-layer token system so components stay consistent and themes remain swappable:\n\n1. **Primitive** — raw values: hex colors, `px`/`rem` sizes, radii. Never consumed directly by components.\n2. **Semantic** — intent-bound abstractions: `--color-bg-surface`, `--space-md`, `--radius-card`.\n3. **Component** — composites binding semantics to a specific part: `--button-primary-bg`, `--card-shadow`.\n\n```css\n:root {\n  /* primitive */\n  --blue-600: #2563eb;\n\n  /* semantic */\n  --color-brand-primary: var(--blue-600);\n  --space-md: 16px;\n\n  /* component */\n  --button-primary-bg: var(--color-brand-primary);\n}\n```\nComponents reference only semantic and component tokens — never primitives — so a theme change never breaks implementation code.\n\n---\n\n## 6. Anti-Patterns (AI-Slop Detection)\nAvoid these recurring \"AI-generated UI\" tells; flag and remove them before delivery:\n\n- Decorative emojis in place of iconography.\n- Purple-to-pink gradients as the default \"tech\" background.\n- Centered landing blobs with floating badges and no layout purpose.\n- Missing `:hover`, `:focus-visible`, `:disabled`, or `:active` states.\n- Hardcoded hex values repeated across files instead of tokens.\n- Oversized, unnecessary hero sections; fake depth (excessive `box-shadow`).\n- Inconsistent radii/spacings (random 13px, 21px values not on the 8pt grid).\n\n---\n\n## 7. QA Checklist (5 Dimensions)\nRun this gate on every generated UI before signaling completion:\n\n| Dimension | Checks |\n|---|---|\n| **Visual** | 60-30-10 respected; tokens used (no magic numbers); 8pt grid; no AI-slop anti-patterns |\n| **Interaction** | All 8 states implemented; micro-interactions 150–250ms on `transform`/`opacity` |\n| **Light/Dark** | Both themes defined; token variables drive colors (no hardcoded light-only values) |\n| **Consistency** | Radii, spacing, typography, and shadows match the design tokens; one source of truth |\n| **Accessibility** | Contrast >= 4.5:1 (3:1 large); keyboard traversal; ARIA states; `:focus-visible` outlines |\n",
+  "metadata": {
+    "skillMdPath": "skills/ui-ux-pro-max/SKILL.md",
+    "notes": "OmniRoute marketplace pattern: handlerCode carries the SKILL.md text as documentation; execution is model-guided tool calls. Replace apiKeyId with your key id."
+  }
+}
